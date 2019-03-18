@@ -2,11 +2,16 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Nearest Location by distance</title>
 </head>
 <body>
+    <h2>Cacluate nearest location by distance</h2>
+    <h4>Calculated Distances</h4>
     <pre id="output"></pre>
+    <h4>Nearest Location (Sorted)</h4>
+    <div id="after-sorting"></div>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
+
 	<script type="text/javascript">
         var home = ['NationalAddress', new google.maps.LatLng(24.742327,46.655987)];
 
@@ -17,15 +22,30 @@
         ];
 
         var output = '';
+        var speeds = [];
 
         var dist = google.maps.geometry.spherical.computeDistanceBetween;
 
-        pts.forEach(function(pt){
-            output += home[0] + ' to ' + pt[0] + ': ' + 
-                (dist(home[1], pt[1])/1000).toFixed(0) + ' km\n';
+        pts.forEach(function(pt) {
+            var distance = (dist(home[1], pt[1])/1000).toFixed(0);
+            output += home[0] + ' to ' + pt[0] + ': ' + distance + ' km\n';
+            var locationWithSpeed = [parseInt(distance),pt[0]];
+            speeds.push(locationWithSpeed);
         });
 
-        document.getElementById('output').innerText = output;		
+        //--- sort speeds slow to high
+        speeds.sort(sortFunction);
+
+        function sortFunction(a, b) {
+            if (a[0] === b[0]) {
+                return 0;
+            }
+            else {
+                return (a[0] < b[0]) ? -1 : 1;
+            }
+        }
+        document.getElementById('output').innerText = output; 
+        document.getElementById('after-sorting').innerText = 'Nearest office from ' + home[0] + ' = ' + speeds[0][0] + ' kms | ' + speeds[0][1];
 	</script>        
 </body>
 </html>
